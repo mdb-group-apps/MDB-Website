@@ -117,6 +117,13 @@ a:focus-visible,button:focus-visible{outline-color:#279779}
 .card p,.card ul{color:#43596F;margin:0 0 10px}
 .card ul{padding-left:18px}
 .card li{margin:0 0 4px}
+.listed{margin-top:24px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--petrol);padding:22px 24px}
+.listed h2{font-family:var(--head);font-weight:500;font-size:1.25rem;color:var(--petrol);margin:0 0 14px}
+.listed ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:14px 24px}
+.listed li{border-left:3px solid var(--accent);padding:2px 0 2px 14px}
+.listed li a{font-weight:600}
+.listed li span{display:block;color:#43596F}
+.listed .more{margin:16px 0 0;font-size:.95rem}
 .tile{display:block;text-decoration:none;color:inherit}
 .tile:hover h3,.tile:focus-visible h3{text-decoration:underline}
 .tile .more{color:var(--accent);font-weight:600}
@@ -156,7 +163,7 @@ html:not(.js) .try form{display:none}
 .mark.unavailable{color:#8A5A00;background:#FBF1DC}
 .mark.invalid{color:#A3352B;background:#FBE9E7}
 .mark.format_error,.mark.unsupported{color:#5B6673;background:#F3F4F6}
-@media (max-width:860px){.product .wrap{grid-template-columns:1fr}.product h1{font-size:2.2rem}.cards{grid-template-columns:1fr}}
+@media (max-width:860px){.product .wrap{grid-template-columns:1fr}.product h1{font-size:2.2rem}.cards{grid-template-columns:1fr}.listed ul{grid-template-columns:1fr}}
 @media (max-width:480px){.try form{flex-direction:column}.btns a{width:100%;text-align:center}}
 @media print{.try{display:none!important}}
 .narrow{max-width:780px}
