@@ -57,14 +57,14 @@ export function page(data) {
   const how = {
     en: [
       "<b>VIES, UID, EOS, registers and tax offices</b> are official systems. The app asks them live and passes on their answer with source and time.",
-      "<b>Peppol</b> is the directory and network of OpenPeppol, the body behind e-invoicing. A missing entry is a hint, not proof.",
+      "<b>Peppol</b> is the e-invoicing network run by OpenPeppol, with its directory of participants. A missing entry is a hint, not proof.",
       "<b>Late-payment interest</b>: the rate comes from the central bank, the app does the calculation.",
       "<b>✓</b> means the app checks itself, without asking anyone: IBAN length and check digits after the SWIFT register, number formats and check digits after the rules of the country, and the statutory 5 % in Switzerland.",
       "<b>Worldwide</b>, without a country list: LEI search and the bank behind a BIC (GLEIF), Peppol search by company name, ECB exchange rates.",
     ],
     de: [
       "<b>VIES, UID, EOS, Register und Steuerverwaltungen</b> sind amtliche Systeme. Die App fragt sie live und gibt ihre Antwort mit Quelle und Zeitpunkt weiter.",
-      "<b>Peppol</b> ist Verzeichnis und Netz von OpenPeppol, der Stelle hinter der E-Rechnung. Ein fehlender Eintrag ist ein Hinweis, kein Beweis.",
+      "<b>Peppol</b> ist das Netz für E-Rechnungen von OpenPeppol, mit dem Verzeichnis der Teilnehmer. Ein fehlender Eintrag ist ein Hinweis, kein Beweis.",
       "<b>Verzugszins</b>: Den Zinssatz liefert die Notenbank, die Rechnung macht die App.",
       "<b>✓</b> heisst: Die App prüft selbst, ohne jemanden zu fragen: Länge und Prüfziffern der IBAN nach dem SWIFT-Register, Form und Prüfziffer von Nummern nach den Regeln des Landes, in der Schweiz der gesetzliche Satz von 5 %.",
       "<b>Weltweit</b>, ohne Länderliste: LEI-Suche und Bank hinter einem BIC (GLEIF), Peppol-Suche nach Firmenname, Wechselkurse der EZB.",

@@ -11,7 +11,7 @@
 //     that looks like a VAT ID, Swiss UID, NIP, Finnish Business ID or IBAN is on the list
 //  5. the list "What is checked" covers every tool of the app (tool list from the app when online)
 //  6. size limits per page
-//  7. «Available on» on the product page (W5): the block written by tools/sync-plattformen.mjs is there once per
+//  7. «Available on» on the product page (W5): the box written by tools/sync-plattformen.mjs is there once per
 //     language, holds nothing or one line of https links with known names, and English and German link the same
 
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
@@ -226,7 +226,7 @@ for (const p of appPages) {
 
 // ---------- 7. «Available on» (W5)
 {
-  const { NAMES, TEXT, marker } = await import("./sync-plattformen.mjs");
+  const { NAMES, TEXT, CONNECT, marker } = await import("./sync-plattformen.mjs");
   const linksOf = {};
   for (const lang of ["en", "de"]) {
     const [open, close] = marker(lang);
@@ -243,14 +243,15 @@ for (const p of appPages) {
       linksOf[lang] = [];
       continue;
     }
-    const m = inner.match(new RegExp(`^<p class="note">${TEXT[lang]} ((?:<a href="https://[^"<>\\s]+">[^<>]+</a>(?: · )?)+)</p>$`));
+    const m = inner.match(new RegExp(`^<div class="listed"><h2>${TEXT[lang]}</h2>\\n<ul>\\n((?:<li><a href="https://[^"<>\\s]+">[^<>]+</a><span>[^<>]+</span></li>\\n)+)</ul>\\n<p class="more"><a href="${CONNECT.href}">[^<>]+</a></p></div>$`));
     if (!m) {
-      fail(`apps/b2b-check/index.html: «Available on» (${lang}) is not one line of links: ${inner.slice(0, 80)}`);
+      fail(`apps/b2b-check/index.html: «Available on» (${lang}) is not the box written by tools/sync-plattformen.mjs: ${inner.slice(0, 80)}`);
       continue;
     }
-    linksOf[lang] = [...m[1].matchAll(/<a href="([^"]+)">([^<]+)<\/a>/g)].map(([, href, name]) => {
-      const known = Object.values(NAMES).some((n) => n[lang] === name.replace(/&amp;/g, "&"));
+    linksOf[lang] = [...m[1].matchAll(/<li><a href="([^"]+)">([^<]+)<\/a><span>([^<]+)<\/span><\/li>/g)].map(([, href, name, about]) => {
+      const known = Object.values(NAMES).find((n) => n[lang] === name.replace(/&amp;/g, "&"));
       if (!known) fail(`apps/b2b-check/index.html: «Available on» (${lang}) names an unknown platform «${name}»`);
+      else if (known.about?.[lang] !== about.replace(/&amp;/g, "&")) fail(`apps/b2b-check/index.html: «Available on» (${lang}): the sentence about «${name}» is not the one in tools/sync-plattformen.mjs`);
       return href;
     });
   }
