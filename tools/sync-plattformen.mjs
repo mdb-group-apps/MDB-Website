@@ -56,8 +56,8 @@ export const NAMES = {
 export const TEXT = { en: "Available on", de: "Verfügbar auf" };
 export const CONNECT = {
   href: "/apps/b2b-check/connect/",
-  en: "Not on your platform yet? Connect it yourself in Claude, ChatGPT and other assistants",
-  de: "Ihre Plattform fehlt noch? In Claude, ChatGPT und anderen Assistenten selbst verbinden",
+  en: "Not on your platform yet? Connect it yourself in Claude and other assistants that support remote MCP servers",
+  de: "Ihre Plattform fehlt noch? In Claude und anderen Assistenten mit MCP-Unterstützung selbst verbinden",
 };
 export const marker = (lang) => [`<!-- gen:available-on ${lang} (tools/sync-plattformen.mjs) -->`, `<!-- /gen:available-on ${lang} -->`];
 
