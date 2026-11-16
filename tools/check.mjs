@@ -10,6 +10,8 @@
 //     that looks like a VAT ID, Swiss UID, NIP, Finnish Business ID or IBAN is on the list
 //  5. the list "What is checked" covers every tool of the app (tool list from the app when online)
 //  6. size limits per page
+//  7. «Available on» on the product page (W5): the block written by tools/sync-plattformen.mjs is there once per
+//     language, holds nothing or one line of https links with known names, and English and German link the same
 
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -200,6 +202,40 @@ for (const p of appPages) {
   if (html > LIMIT_HTML) fail(`${rel(p)}: ${html} bytes HTML, limit ${LIMIT_HTML}`);
   if (total > LIMIT_TOTAL) fail(`${rel(p)}: ${total} bytes with CSS and scripts, limit ${LIMIT_TOTAL}`);
   console.log(`size ${rel(p)}: ${html} bytes HTML, ${total} with CSS and scripts (fonts not counted, shared with the whole site)`);
+}
+
+// ---------- 7. «Available on» (W5)
+{
+  const { NAMES, TEXT, marker } = await import("./sync-plattformen.mjs");
+  const linksOf = {};
+  for (const lang of ["en", "de"]) {
+    const [open, close] = marker(lang);
+    const a = product.indexOf(open);
+    const b = product.indexOf(close);
+    if (a < 0 || b < a || product.indexOf(open, a + 1) >= 0) {
+      fail(`apps/b2b-check/index.html: markers of «Available on» (${lang}) missing or twice`);
+      continue;
+    }
+    const inner = product.slice(a + open.length, b).trim();
+    const inLang = product.slice(0, a).lastIndexOf('<div lang="') === product.slice(0, a).lastIndexOf(`<div lang="${lang}">`);
+    if (!inLang) fail(`apps/b2b-check/index.html: «Available on» (${lang}) is not inside <div lang="${lang}">`);
+    if (!inner) {
+      linksOf[lang] = [];
+      continue;
+    }
+    const m = inner.match(new RegExp(`^<p class="note">${TEXT[lang]} ((?:<a href="https://[^"<>\\s]+">[^<>]+</a>(?: · )?)+)</p>$`));
+    if (!m) {
+      fail(`apps/b2b-check/index.html: «Available on» (${lang}) is not one line of links: ${inner.slice(0, 80)}`);
+      continue;
+    }
+    linksOf[lang] = [...m[1].matchAll(/<a href="([^"]+)">([^<]+)<\/a>/g)].map(([, href, name]) => {
+      const known = Object.values(NAMES).some((n) => n[lang] === name.replace(/&amp;/g, "&"));
+      if (!known) fail(`apps/b2b-check/index.html: «Available on» (${lang}) names an unknown platform «${name}»`);
+      return href;
+    });
+  }
+  if (linksOf.en && linksOf.de && linksOf.en.join(" ") !== linksOf.de.join(" ")) fail("apps/b2b-check/index.html: «Available on» links differ between English and German");
+  if (linksOf.en) console.log(`check: «Available on» lists ${linksOf.en.length} platform(s)`);
 }
 
 await online();
