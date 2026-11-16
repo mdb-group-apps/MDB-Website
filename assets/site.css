@@ -78,7 +78,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offs
 .logo{display:block;line-height:0}.logo::before{display:none}.logo svg{height:46px;width:auto}
 .skip{position:absolute;left:-9999px;top:0;background:#fff;color:var(--ink);padding:10px 16px;z-index:10}.skip:focus{left:12px;top:12px}
 .nf{padding-top:72px;padding-bottom:96px;min-height:50vh}.nf p{max-width:620px;font-size:1.1rem}
-@media print{header nav,.lang,.skip,.btn,.art,footer nav{display:none!important}
+@media print{header nav,.crumbs,.lang,.skip,.btn,.art,footer nav{display:none!important}
 *{background:#fff!important;color:#000!important;box-shadow:none!important}
 .pagehead,.hero,.section,.deep{padding:12px 0!important;border:0!important}
 .pagehead h1,.hero h1{color:#000!important;font-size:22pt!important}
@@ -117,6 +117,17 @@ a:focus-visible,button:focus-visible{outline-color:#279779}
 .card p,.card ul{color:#43596F;margin:0 0 10px}
 .card ul{padding-left:18px}
 .card li{margin:0 0 4px}
+/* Breadcrumb and menu of an app (below the header on the pages of an app) */
+.crumbs{background:var(--tint);border-bottom:1px solid var(--line);font-size:.875rem}
+.crumbs .wrap{display:flex;flex-wrap:wrap;gap:6px 28px;align-items:center;justify-content:space-between;padding-top:10px;padding-bottom:10px}
+.crumbs nav{margin:0;font-size:inherit;gap:4px 22px}
+.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;gap:4px 8px;margin:0;padding:0}
+.crumbs li+li::before{content:"\203A";margin-right:8px;color:var(--muted)}
+.crumbs ol a{text-decoration:underline;text-underline-offset:2px}
+.crumbs ol [aria-current]{color:var(--petrol);font-weight:600}
+.crumbs span[lang="de"]{border:0;margin:0;padding:0}
+html:not(.js) .crumbs span[lang="de"]{display:none}
+footer a[aria-current]{font-weight:600}
 .tile{display:block;text-decoration:none;color:inherit}
 .tile:hover h3,.tile:focus-visible h3{text-decoration:underline}
 .tile .more{color:var(--accent);font-weight:600}
