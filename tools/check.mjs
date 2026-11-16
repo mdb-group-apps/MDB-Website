@@ -2,7 +2,8 @@
 // Exit code 1 if a check fails. Network checks (tool list and example numbers against the app)
 // are skipped with a warning when the app cannot be reached.
 //
-//  1. every page has English and German content and the menu item "Apps"
+//  1. every page has English and German content, the same main menu (Home, Apps, MDB B2B Check) and the legal
+//     links in the footer; the pages of an app carry the breadcrumb and the menu of the app
 //  2. internal links and anchors point to existing files and ids
 //  3. the Content-Security-Policy of each page matches its inline and external scripts and styles;
 //     the page with the try-it form may connect to https://b2b.mdb-group.info, no other page may connect anywhere
@@ -45,6 +46,25 @@ for (const p of pages) {
   if (!/lang="en"/.test(s.replace(/<html lang="en">/, "")) || !/lang="de"/.test(s)) fail(`${rel(p)}: English or German content missing`);
   const nav = s.match(/<nav aria-label="Main">([\s\S]*?)<\/nav>/);
   if (!nav || !/href="\/apps\/"/.test(nav[1])) fail(`${rel(p)}: menu item "Apps" missing`);
+  // The main menu is the same on every page: Home, Apps, MDB B2B Check. Legal pages are linked in the footer only.
+  if (nav) {
+    const hrefs = [...nav[1].matchAll(/<a href="([^"]+)"/g)].map((m) => (m[1] === "index.html" ? "/" : m[1]));
+    if (hrefs.join(" ") !== "/ /apps/ /apps/b2b-check/") fail(`${rel(p)}: main menu is not Home, Apps, MDB B2B Check (${hrefs.join(" ")})`);
+    if ((nav[1].match(/aria-current="page"/g) ?? []).length > 1) fail(`${rel(p)}: more than one current item in the main menu`);
+  }
+  const footer = s.match(/<footer>([\s\S]*?)<\/footer>/);
+  for (const legal of ["imprint.html", "privacy.html", "terms.html"]) if (!footer || !new RegExp(`href="/?${legal}"`).test(footer[1])) fail(`${rel(p)}: footer link to ${legal} missing`);
+  // Pages of an app below the app list carry the breadcrumb and the menu of the app, right after the header.
+  if (/^apps\/[^/]+\//.test(rel(p))) {
+    const bar = s.match(/<\/header>\n<div class="crumbs"><div class="wrap"><nav aria-label="Breadcrumb"><ol>([\s\S]*?)<\/ol><\/nav><nav class="subnav" aria-label="[^"]+">([\s\S]*?)<\/nav><\/div><\/div>/);
+    if (!bar) fail(`${rel(p)}: breadcrumb bar missing after the header`);
+    else {
+      if (!bar[1].startsWith('<li><a href="/">') || !bar[1].includes('<li><a href="/apps/">')) fail(`${rel(p)}: breadcrumb does not start with Home and Apps`);
+      if (!/<li><span aria-current="page">[\s\S]+<\/span><\/li>$/.test(bar[1])) fail(`${rel(p)}: breadcrumb does not end with the current page`);
+      const self = "/" + rel(p).replace(/index\.html$/, "");
+      if (!new RegExp(`<a href="${self}" aria-current="page">`).test(bar[2])) fail(`${rel(p)}: the menu of the app does not mark this page as current`);
+    }
+  }
 }
 
 // ---------- 2. internal links and anchors
