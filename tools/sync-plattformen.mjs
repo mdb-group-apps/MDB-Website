@@ -1,4 +1,4 @@
-// «Available on …» / «Verfügbar auf …» on the product page of MDB B2B Check (W5), from the platform list of MDB-apps.
+// The box «Available on» / «Verfügbar auf» on the product page of MDB B2B Check (W5), from the platform list of MDB-apps.
 //
 //   node tools/sync-plattformen.mjs <path to MDB-apps>/docs/verteilung/plattformen.json
 //   node tools/sync-plattformen.mjs <…>/plattformen.json --check     exit 1 if the page is not what the file gives
@@ -6,7 +6,8 @@
 // The platform list is maintained only in MDB-apps (docs/verteilung/plattformen.md, E-191); that repo is private and
 // its file holds internal notes (accounts, partner talks). So this public repo keeps no copy of it: the script takes
 // only the platforms where B2B Check is «gelistet», only their name and one link (the entry of the app, else the
-// platform), and writes them between the markers in apps/b2b-check/index.html, in English and German. Without a
+// platform), adds one sentence about the platform from NAMES below, and writes a box between the markers in
+// apps/b2b-check/index.html, in English and German. The box ends with a link to the page «Connect». Without a
 // listed platform the block stays empty and nothing shows. tools/check.mjs checks the block (form, links, both
 // languages alike). Keeping it in step with MDB-apps is a maintenance step: run this after a platform changes to or
 // from «gelistet» (README, «Checks»; plattformen.md, «Pflege»).
@@ -18,11 +19,29 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const PAGE = join(ROOT, "apps", "b2b-check", "index.html");
 export const APP = "b2b-check";
 
-/** The name of each platform per language, by its id in plattformen.json. A listed platform missing here stops the script. */
+/**
+ * The name of each platform per language and one sentence for customers (`about`), by its id in plattformen.json.
+ * A listed platform that is missing here or has no `about` stops the script.
+ */
 export const NAMES = {
   // The entry in the registry is only its JSON interface; for people the start page of the registry is linked.
-  "offizielle-mcp-registry": { en: "Official MCP Registry", de: "Offizielle MCP Registry", link: "platform" },
-  glama: { en: "Glama", de: "Glama" },
+  "offizielle-mcp-registry": {
+    en: "Official MCP Registry",
+    de: "Offizielle MCP Registry",
+    link: "platform",
+    about: {
+      en: "The official directory of MCP servers. Many AI programs and other directories read from it.",
+      de: "Das offizielle Verzeichnis der MCP-Server. Viele KI-Programme und andere Verzeichnisse lesen daraus.",
+    },
+  },
+  glama: {
+    en: "Glama",
+    de: "Glama",
+    about: {
+      en: "A directory of MCP servers that shows the tools and the availability of each entry.",
+      de: "Ein Verzeichnis von MCP-Servern, das die Werkzeuge und die Erreichbarkeit jedes Eintrags zeigt.",
+    },
+  },
   "mcp-so": { en: "mcp.so", de: "mcp.so" },
   "hugging-face": { en: "Hugging Face", de: "Hugging Face" },
   "cursor-marketplace": { en: "Cursor Marketplace", de: "Cursor Marketplace" },
@@ -33,8 +52,13 @@ export const NAMES = {
   langdock: { en: "Langdock", de: "Langdock" },
   perplexity: { en: "Perplexity", de: "Perplexity" },
 };
-/** The words around the list, per language. */
-export const TEXT = { en: "Available on:", de: "Verfügbar auf:" };
+/** The heading of the box and the link to the page «Connect», per language. */
+export const TEXT = { en: "Available on", de: "Verfügbar auf" };
+export const CONNECT = {
+  href: "/apps/b2b-check/connect/",
+  en: "Not on your platform yet? Connect it yourself in Claude and other assistants that support remote MCP servers",
+  de: "Ihre Plattform fehlt noch? In Claude und anderen Assistenten mit MCP-Unterstützung selbst verbinden",
+};
 export const marker = (lang) => [`<!-- gen:available-on ${lang} (tools/sync-plattformen.mjs) -->`, `<!-- /gen:available-on ${lang} -->`];
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -48,15 +72,17 @@ export function listed(data) {
     const url = (NAMES[p.id]?.link === "platform" ? null : s.links?.[0]?.url) ?? p.links?.[0]?.url;
     if (!url || !/^https:\/\/[^\s"<>]+$/.test(url)) throw new Error(`platform ${p.id}: no https link for the entry`);
     if (!NAMES[p.id]) throw new Error(`platform ${p.id} is listed but has no name in NAMES (tools/sync-plattformen.mjs)`);
+    if (!NAMES[p.id].about?.en || !NAMES[p.id].about?.de) throw new Error(`platform ${p.id} is listed but has no sentence «about» in NAMES (tools/sync-plattformen.mjs)`);
     out.push({ id: p.id, url });
   }
   return out;
 }
 
-/** The HTML between the markers for one language: one line, or nothing. */
+/** The HTML between the markers for one language: one box (heading, one entry per platform, link to «Connect»), or nothing. */
 export function block(items, lang) {
   if (!items.length) return "";
-  return `<p class="note">${TEXT[lang]} ${items.map((i) => `<a href="${esc(i.url)}">${esc(NAMES[i.id][lang])}</a>`).join(" · ")}</p>`;
+  const rows = items.map((i) => `<li><a href="${esc(i.url)}">${esc(NAMES[i.id][lang])}</a><span>${esc(NAMES[i.id].about[lang])}</span></li>`);
+  return [`<div class="listed"><h2>${TEXT[lang]}</h2>`, "<ul>", ...rows, "</ul>", `<p class="more"><a href="${CONNECT.href}">${esc(CONNECT[lang])}</a></p></div>`].join("\n");
 }
 
 /** The page with both blocks replaced. Each marker pair must be there exactly once. */
