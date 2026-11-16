@@ -13,6 +13,9 @@
 //  6. size limits per page
 //  7. «Available on» on the product page (W5): the box written by tools/sync-plattformen.mjs is there once per
 //     language, holds nothing or one line of https links with known names, and English and German link the same
+//  8. shared design (D-C, #161): assets/mdb.css is the copy of MDB-apps design/mdb.css (its header says so), every
+//     font it names is in fonts/, and every page that loads assets/site.css loads assets/mdb.css right before it.
+//     Whether the copy equals MDB-apps is checked with tools/sync-design.mjs --check (MDB-apps is private).
 
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -257,6 +260,25 @@ for (const p of appPages) {
   }
   if (linksOf.en && linksOf.de && linksOf.en.join(" ") !== linksOf.de.join(" ")) fail("apps/b2b-check/index.html: «Available on» links differ between English and German");
   if (linksOf.en) console.log(`check: «Available on» lists ${linksOf.en.length} platform(s)`);
+}
+
+// ---------- 8. shared design (D-C)
+{
+  const mdb = read(join(ROOT, "assets/mdb.css"));
+  if (!mdb.startsWith("/* MDB Group design:") || !mdb.includes("Source: MDB-apps design/mdb.css")) fail("assets/mdb.css: header of the copy from MDB-apps missing");
+  for (const m of mdb.matchAll(/url\(([^)]+)\)/g)) {
+    const u = m[1].replace(/["']/g, "");
+    if (!u.startsWith("/fonts/")) fail(`assets/mdb.css: only fonts from /fonts/ may be loaded (${u})`);
+    else if (!existsSync(join(ROOT, u))) fail(`assets/mdb.css: ${u} is missing`);
+  }
+  let pagesWithDesign = 0;
+  for (const p of pages) {
+    const s = read(p);
+    if (!s.includes('href="/assets/site.css"')) continue;
+    pagesWithDesign++;
+    if (!s.includes('<link rel="stylesheet" href="/assets/mdb.css">\n<link rel="stylesheet" href="/assets/site.css">')) fail(`${rel(p)}: loads assets/site.css without assets/mdb.css right before it`);
+  }
+  console.log(`check: shared design loaded by ${pagesWithDesign} page(s)`);
 }
 
 await online();
