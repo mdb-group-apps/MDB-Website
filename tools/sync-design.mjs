@@ -5,7 +5,7 @@
 //   node tools/sync-design.mjs <path to MDB-apps>/design           copies mdb.css and the fonts
 //   node tools/sync-design.mjs <path to MDB-apps>/design --check   exit 1 if a file differs (QA, before a release)
 //
-// Compared byte for byte, with line endings normalised for the CSS (a Windows checkout may have CRLF). Change the design
+// Compared byte for byte, with line endings normalised for the text files .css and .txt (a Windows checkout may have CRLF). Change the design
 // in MDB-apps, never here; then run this and open a pull request here (README, «Checks»).
 import { readFileSync, writeFileSync, readdirSync, existsSync, copyFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -20,7 +20,9 @@ export function pairs(designDir) {
   return out;
 }
 
-const norm = (p, buf) => (p.endsWith(".css") ? Buffer.from(buf.toString("utf8").replace(/\r\n/g, "\n")) : buf);
+/** Text files (.css, .txt) are compared and written with LF line endings: a Windows checkout may have CRLF. Fonts byte for byte. */
+export const isText = (p) => /\.(css|txt)$/.test(p);
+const norm = (p, buf) => (isText(p) ? Buffer.from(buf.toString("utf8").replace(/\r\n/g, "\n")) : buf);
 
 const self = fileURLToPath(import.meta.url);
 if (process.argv[1] && self.toLowerCase() === (await import("node:path")).resolve(process.argv[1]).toLowerCase()) {
@@ -37,7 +39,7 @@ if (process.argv[1] && self.toLowerCase() === (await import("node:path")).resolv
     if (same) continue;
     differ++;
     if (check) console.log(`differs: ${dst.slice(ROOT.length + 1)}`);
-    else if (src.endsWith(".css")) writeFileSync(dst, a);
+    else if (isText(src)) writeFileSync(dst, a);
     else copyFileSync(src, dst);
   }
   if (check) {
