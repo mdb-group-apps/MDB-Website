@@ -128,6 +128,21 @@ a:focus-visible,button:focus-visible{outline-color:#279779}
 .crumbs span[lang="de"]{border:0;margin:0;padding:0}
 html:not(.js) .crumbs span[lang="de"]{display:none}
 footer a[aria-current]{font-weight:600}
+/* Page «Countries» */
+.how{padding-left:20px}.how li{margin:0 0 8px}
+.csearch{margin:0 0 14px}.csearch input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:3px;width:260px;max-width:100%;margin-left:8px}
+#ccount{color:var(--muted);font-size:.9rem;margin-left:10px}
+.ctab{overflow-x:auto;background:#fff;border:1px solid var(--line)}
+.ctab table{border-collapse:collapse;font-size:.88rem;min-width:820px;width:100%}
+.ctab th,.ctab td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+.ctab thead th{background:var(--petrol);color:#fff;font-weight:600;position:sticky;top:0}
+.ctab thead small{display:block;font-weight:400;opacity:.75}
+.ctab tbody th{font-weight:600;color:var(--petrol);white-space:nowrap}
+.ctab td{color:#43596F}.ctab td.calc{color:var(--accent);font-weight:700}
+.ctab span[lang="de"],.legend span[lang="de"],.section.tint h2 span[lang="de"],.section.tint p span[lang="de"],.csearch span[lang="de"]{border:0;margin:0;padding:0}
+html:not(.js) .ctab span[lang="de"]{display:none}
+.legend{list-style:none;padding:0;columns:2;column-gap:32px}.legend li{margin:0 0 8px;break-inside:avoid;display:grid;grid-template-columns:130px 1fr;gap:10px}.legend b{color:var(--petrol)}
+@media (max-width:700px){.legend{columns:1}}
 .tile{display:block;text-decoration:none;color:inherit}
 .tile:hover h3,.tile:focus-visible h3{text-decoration:underline}
 .tile .more{color:var(--accent);font-weight:600}
