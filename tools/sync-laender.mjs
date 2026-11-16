@@ -103,6 +103,7 @@ export function page(data) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Countries – MDB B2B Check – MDB Group</title>
 <meta name="description" content="Which check MDB B2B Check offers in which country, and which official system the answer comes from.">
+<link rel="stylesheet" href="/assets/mdb.css">
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/lang.js"></script>
 <script src="/assets/countries.js" defer></script>
