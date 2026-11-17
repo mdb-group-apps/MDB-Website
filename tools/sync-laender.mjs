@@ -121,7 +121,7 @@ ${lang("de", "Länder")}
 ${rows.join("\n")}
 </tbody></table></div>
 <h2>${both({ en: "Systems", de: "Systeme" })}</h2>
-<p>${both({ en: "Each answer names its source and links to the page where you can repeat the check by hand:", de: "Jede Antwort nennt ihre Quelle und verlinkt die Seite, auf der Sie die Prüfung von Hand wiederholen können:" })}</p>
+<p>${both({ en: "Where available, an answer names its source and links to the page where you can repeat the check by hand:", de: "Soweit verfügbar, nennt eine Antwort ihre Quelle und verlinkt die Seite, auf der Sie die Prüfung von Hand wiederholen können:" })}</p>
 <ul class="legend">${legend.join("")}</ul>
 <!-- /gen:countries -->
 </div></section>
