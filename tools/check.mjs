@@ -184,7 +184,9 @@ const COVER = {
   check_business_partner: "Full partner check", check_iban: "IBAN", get_exchange_rate: "ECB reference rates",
   check_payment_details: "BIC", calculate_late_interest: "late-payment interest", validate_tax_id_format: "Tax ID formats",
   check_company_register: "Company registers", check_registered_bank_account: "Bank account at the tax authority",
-  verify_receipt: "Signed receipts",
+  // verify_receipt ("Signed receipts") is not listed while receipts are off in the app (MDB-apps #515, 18.11.2026): the
+  // app then offers no such tool, and the page names nothing the app does not offer. When receipts are switched on,
+  // the app lists verify_receipt again and this check fails until the page describes it and it is back here.
 };
 const OMIT = new Set([]);
 const product = read(join(ROOT, "apps/b2b-check/index.html"));
