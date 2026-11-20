@@ -33,6 +33,28 @@ export const SHORT = {
   ares: "ARES", brreg: "Brønnøysund", prh: "PRH/YTJ", gb_companies_house: "Companies House",
   fr_sirene: "Sirene", sk_rpo: "RPO", lv_ur: "UR", tw_gcis: "GCIS", th_rd: "RD", aeo: "AEO",
 };
+/**
+ * German name of each system in the legend; the English name comes from laender.json. A source of laender.json
+ * without a name here stops the script (MDB-apps #201, QA 3: the German view showed the English names). The words
+ * follow the German texts of this site (the product page and the privacy policy).
+ */
+export const NAME_DE = {
+  vies: "VIES der EU-Kommission",
+  uid_ch: "UID-Register des Bundesamts für Statistik",
+  eos: "EORI-Dienst der EU-Kommission",
+  peppol_directory: "Peppol-Verzeichnis (OpenPeppol)",
+  ecb: "ECB Data Portal (EZB)",
+  riksbank: "Sveriges Riksbank",
+  dk_nationalbank: "Danmarks Nationalbank",
+  nbp: "Polnische Nationalbank (Narodowy Bank Polski)",
+  cnb: "Tschechische Nationalbank",
+  pl_whitelist: "Weisse Liste des Finanzministeriums (Polen)",
+  cz_adis: "Register der Mehrwertsteuerzahler (tschechische Finanzverwaltung)",
+  ares: "ARES des tschechischen Finanzministeriums",
+  brreg: "Brønnøysund-Registerzentrum",
+  prh: "PRH / YTJ (Finnland)",
+  gb_companies_house: "Companies House (Vereinigtes Königreich)",
+};
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const both = (t) => `<span lang="en">${esc(t.en)}</span><span lang="de">${esc(t.de)}</span>`;
@@ -40,6 +62,7 @@ const both = (t) => `<span lang="en">${esc(t.en)}</span><span lang="de">${esc(t.
 export function page(data) {
   for (const c of data.checks) if (!CHECK_TEXT[c.key]) throw new Error(`check ${c.key} has no text in CHECK_TEXT (tools/sync-laender.mjs)`);
   for (const id of Object.keys(data.sources)) if (!SHORT[id]) throw new Error(`source ${id} has no short name in SHORT (tools/sync-laender.mjs)`);
+  for (const id of Object.keys(data.sources)) if (!NAME_DE[id]) throw new Error(`source ${id} has no German name in NAME_DE (tools/sync-laender.mjs)`);
   for (const s of Object.values(data.sources)) if (!/^https:\/\/[^\s"<>]+$/.test(s.url)) throw new Error(`source ${s.name}: no https link`);
   const keys = data.checks.map((c) => c.key);
   const cell = (c) => (!c ? "<td>–</td>" : c.calculated ? `<td class="calc">✓</td>` : `<td>${esc(SHORT[c.source])}</td>`);
@@ -47,7 +70,7 @@ export function page(data) {
     .sort((a, b) => a.name.en.localeCompare(b.name.en, "en"))
     .map((c) => `<tr><th scope="row">${both(c.name)}</th>${keys.map((k) => cell(c.checks[k])).join("")}</tr>`);
   const count = (k) => data.countries.filter((c) => c.checks[k]).length;
-  const legend = Object.entries(data.sources).map(([id, s]) => `<li><b>${esc(SHORT[id])}</b> <a href="${esc(s.url)}">${esc(s.name)}</a></li>`);
+  const legend = Object.entries(data.sources).map(([id, s]) => `<li><b>${esc(SHORT[id])}</b> <a href="${esc(s.url)}">${both({ en: s.name, de: NAME_DE[id] })}</a></li>`);
   const n = data.countries.length;
 
   const intro = {
