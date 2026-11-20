@@ -103,7 +103,7 @@ for (const path of PAGES) for (const lang of ["en", "de"]) for (const width of W
     ["unavailable", "DE811569869", { status: 200, body: fixture("unavailable.json").body }, (t) => t.includes("Could not be checked") && t.includes("This says nothing about the number") && !t.includes("Not valid")],
     ["limit 429", "SK2120577756", { status: 429, body: { error: "Too many checks from your connection. Please wait 10 minutes." } }, (t) => t.includes("Please wait 10 minutes")],
     ["bad request 400", "SK2120577756", { status: 400, body: fixture("bad_request.json").body }, (t) => t.includes("This input cannot be checked") && !t.includes("MCP error")],
-    ["origin 403", "SK2120577756", { status: 403, body: { error: "Origin not allowed" } }, (t) => t.includes("does not accept requests from this page")],
+    ["origin 403", "SK2120577756", { status: 403, body: { error: "Origin not allowed" } }, (t) => t.includes("could not be reached") && !t.includes("does not accept")],
     ["server 502 (Cloudflare page)", "SK2120577756", { status: 502, type: "text/html", raw: "<!DOCTYPE html><title>502 Bad gateway</title><h1>Error 502</h1>" }, (t) => t.includes("could not be reached")],
     ["200 but no JSON", "SK2120577756", { status: 200, type: "text/html", raw: "<html>maintenance</html>" }, (t) => t.includes("could not be reached")],
     ["no answer within 15 s", "SK2120577756", { status: 200, body: fixture("valid.json").body, delayMs: 17000 }, (t) => t.includes("could not be reached")],
