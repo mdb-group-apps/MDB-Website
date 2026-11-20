@@ -16,7 +16,6 @@
     unavailableNote: ["This says nothing about the number. Try again later.", "Das sagt nichts über die Nummer. Bitte später nochmals versuchen."],
     unreachable: ["The check service could not be reached. Please try again.", "Der Prüfdienst ist nicht erreichbar. Bitte nochmals versuchen."],
     limit: ["Too many checks from your connection. Please wait 10 minutes.", "Zu viele Prüfungen von Ihrer Verbindung. Bitte 10 Minuten warten."],
-    origin: ["The check service does not accept requests from this page. Use the web check at b2b.mdb-group.info.", "Der Prüfdienst nimmt von dieser Seite keine Anfragen an. Bitte die Web-Prüfung unter b2b.mdb-group.info nutzen."],
     cached: [" (from cache)", " (aus dem Zwischenspeicher)"],
     badInput: ["This input cannot be checked. Please enter one VAT ID or Swiss UID.", "Diese Eingabe lässt sich nicht prüfen. Bitte eine USt-IdNr. oder Schweizer UID eingeben."],
     source: ["Source", "Quelle"],
@@ -134,11 +133,12 @@
           return res.json().then(function (body) { return { status: res.status, body: body }; }, function () { return { status: res.status, body: null }; });
         })
         .then(function (r) {
-          // 200 with a JSON result; 429 visitor limit; 403 origin not allowed (e.g. page opened locally);
-          // 400: a fixed sentence (the app's message is technical); anything else (5xx, a Cloudflare error page, no JSON): not reachable.
+          // 200 with a JSON result; 429 visitor limit; 400: a fixed sentence (the app's message is technical);
+          // anything else (5xx, a Cloudflare error page, no JSON): not reachable. The app's 403 «Origin not allowed»
+          // (a page opened elsewhere than mdb-group.info) carries no CORS header, so the browser blocks it and the
+          // catch below shows «not reachable»; no text of its own (MDB-apps issue 201, QA 3).
           if (r.status === 200 && r.body && typeof r.body.status === "string") render(out, r.body);
           else if (r.status === 429) fail(out, TEXT.limit);
-          else if (r.status === 403) fail(out, TEXT.origin);
           else if (r.status === 400) fail(out, TEXT.badInput);
           else fail(out, TEXT.unreachable);
         })
